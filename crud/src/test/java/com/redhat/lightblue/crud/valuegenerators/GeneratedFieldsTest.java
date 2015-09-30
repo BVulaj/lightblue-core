@@ -39,6 +39,5 @@ public class GeneratedFieldsTest extends AbstractJsonSchemaTest {
         GeneratedFields.initializeGeneratedFields(factory, md, jd);
         String uid = jd.get(new Path("legalEntities.0.permissions.0.uid")).asText();
         Assert.assertNotNull(uid);
-        Assert.assertFalse(uid.isEmpty());
     }
 }
