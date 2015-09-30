@@ -26,13 +26,13 @@ import com.redhat.lightblue.crud.DocCtx;
 import com.redhat.lightblue.mediator.OperationContext;
 
 import com.redhat.lightblue.metadata.EntityMetadata;
-
+import com.redhat.lightblue.interceptor.CRUDControllerInterceptor;
 import com.redhat.lightblue.interceptor.CRUDDocInterceptor;
 import com.redhat.lightblue.interceptor.MediatorInterceptor;
 import com.redhat.lightblue.interceptor.InterceptorManager;
 import com.redhat.lightblue.interceptor.InterceptPoint;
 
-public class GeneratedFieldInterceptor implements CRUDDocInterceptor, MediatorInterceptor {
+public class GeneratedFieldInterceptor implements CRUDDocInterceptor, MediatorInterceptor, CRUDControllerInterceptor {
 
     public static final int GEN_SEQ = 600;
 
@@ -40,8 +40,9 @@ public class GeneratedFieldInterceptor implements CRUDDocInterceptor, MediatorIn
         mgr.registerInterceptor(GEN_SEQ, this,
                                 InterceptPoint.PRE_CRUD_INSERT_DOC,
                                 InterceptPoint.PRE_MEDIATOR_SAVE,
-                                InterceptPoint.PRE_CRUD_UPDATE_DOC,
-                                InterceptPoint.PRE_MEDIATOR_INSERT);
+                                InterceptPoint.POST_CRUD_UPDATE_RESULTSET,
+                                InterceptPoint.PRE_MEDIATOR_INSERT
+                                );
     }
 
     @Override
@@ -57,5 +58,13 @@ public class GeneratedFieldInterceptor implements CRUDDocInterceptor, MediatorIn
         GeneratedFields.initializeGeneratedFields(ctx.getFactory(),
                                                   ctx.getEntityMetadata(ctx.getEntityName()),
                                                   doc);
+    }
+
+    @Override
+    public void run(CRUDOperationContext ctx) {
+        EntityMetadata md = ctx.getEntityMetadata(ctx.getEntityName());
+        for (DocCtx doc : ctx.getDocuments()) {
+            GeneratedFields.initializeGeneratedFields(ctx.getFactory(), md, doc);
+        }
     }
 }
